@@ -9,11 +9,11 @@ output:
 
 ## Project thoughts
 
-I am interested in exploring data related to educational policy data in schools across the United States. I want to explore some of the correlations and connections between student test scores, unionization and student performance through various parts of the country. I am very interested in data concerning the differences in gpd per capital and human capitol amoungst states with district with stronger unions and school committee boards and how it affects the probability of student success and contributions back to their home city.
+I am interested in exploring data related to educational policy data in schools across the United States. I want to explore some of the correlations and connections between student test score and student performance through various parts of the country. I am very interested in data concerning the differences in test scores amoungst states or countries with district with stronger unions and and how it affects the probability of student success and contributions back to their home city.
 
-## Milestone
+## Milestone 2
 
-Does the implementation of standardized testing really enhance their human capital? In this study, I plan to examine the extent to which schools who utilize standardized testing and the most test prep has affected the students ability to pursue higher education and a greater life outcome. I hypothesize that there will actually be little to no difference in human capital based on standardized testing that a student might have gone through. People often misconceptualized the significance of standardized testing in believing that this will motivate students more pursue higher education when in reality it might diminish their motivation. I would like to explore this across various socioeconomic district schools if possible as well. I believe it makes no difference because students can choose to pursue other paths such as trade school and still contribute equally to how students who pursue higher education will. This is with the assumption that students who take more standardized tests are more likely to pursue higher education. My sample is composed of 2022-2012 student progress datasets from the National Center of Education Statistics. My unit of analysis is standardized testing rates. The explanatory variables of interest are whether they implemented standardized testing mandatory for graduation (1 = TRUE, 0 = FALSE) and how often they implemented them (numerical value). My outcome variable would be salaries in the following 10 years (measured in hundred thousands so for example 110k = 11.0). If I observe that there is no greater difference between the salaries of students who did not undergo standardized testing more often than those who did, this would provide sufficient evidence for my hypothesis. If on the other hand, I notice a significant difference in salary, this would prove my hypothesis wrong. I plan to take into consideration the socioeconomic status of each district, since this is a huge confounding variable that can affect my results (or maybe not).
+Is there higher demonstration of human capitol in certain income countriws with the more curriculum-based or skills based standardized tests? In this study, I plan to examine test scores of regions who administer both the PISA and the TIMSS/PIRLS, both tests that fall under tha Evaulation of Educational Achievement. Both the TIMSS (Trends in International Mathematics and Science Study) and the PIRLS (Progress in International Reading Literacy Study) are curriculum based, used to reflect knowledge taught in chools. The Program for International Student Assessment is an international assesment that can assess whether students can apply what theyve learned to solve "real world problems". I hypothesize that there will be a significant difference between lower income regions and higher income regions, and that lower income regions will perform better in skills based testing. While sutdents are administering more curricuklum based tests, higher income regions have more access to tutouring services and likely have higher quality professors. The higher the funding of a particualr country for educational spending within a region, the greater resoruces, and therefore a greater chance of higher income regions doing better on curriculumn based instruction. My sample is composed of the Harmonized Learing Outcomes (HLO) Database, a dataset aiming to birdge the gap between low- and middle-income countries in standardized testing that may have the most to gain from the formation of human capital. The data represent 98% of the global population (164 countries) and developing economies comprise two-thirds of the included countries from 2000 to 2017. My unit of analysis is hlo, a measurement to track the formation of human capital. The explanatory variables of interest whether countries are low income, high income, or lower-high income. My outcome variable would be HLO levels comparable in both the PISA and TIMSS/PIRLS tests. If I observe that there is a greater HLO value for higher income regions for the PISA test results, this would provide sufficient evidence for my hypothesis. If on the other hand, if I notice the lower income regions are higher, this would prove my hypothesis wrong. I plan to take into consideration the timeline between both decades where this dataset took, since this is a huge confounding variable that can affect my results.
 
 ##Milestone 3
 
@@ -26,6 +26,7 @@ library(readxl)
 hlo_database <- read_excel("hlo_database.xlsx")
 
 outcome <- hlo_database |>
+  filter(sourcetest == "TIMSS" | sourcetest == "PIRLS") |>
   group_by(country, year) |>
   summarize(mean_HLO = mean(hlo)) %>% 
   ungroup()
@@ -43,5 +44,51 @@ ggplot(data = outcome,
   
 outcome %>% 
   ggplot(aes(x = year, y = mean_HLO, fill = region, color = region)) + geom_point() + facet_wrap(~ incomegroup)
-
 ```
+##Milestone 4 
+```{r}
+outcome2 <- hlo_database |>
+  filter(sourcetest == "PISA") |>
+  group_by(country, year) |>
+  summarize(mean_HLO = mean(hlo)) |> 
+  ungroup()
+
+outcome2 <- outcome2 |>
+  left_join(hlo_database, by = c("country", "year"))
+
+ggplot(data = outcome2,
+       group = incomegroup,
+       mapping = aes(x = year,
+                     y = mean_HLO,
+                     color = country,
+                     fill = country)) +
+  geom_point()
+  
+outcome2  |>
+  ggplot(aes(x = year, y = mean_HLO, fill = region, color = region)) + geom_point() + facet_wrap(~ incomegroup)
+```
+```{r}
+hlo_database |>
+  filter(sourcetest %in% c("PISA", "TIMSS")) |>
+ggplot(mapping = aes(x = incomegroup, y = hlo)) +
+  scale_fill_manual(values = c(PISA = "steelblue1", TIMSS = "indianred1")) + geom_col(mapping = aes(fill = sourcetest))
+```
+
+```{r}
+yes4 <- hlo_database |>
+  filter(sourcetest %in% c("PISA", "TIMSS")) |>
+  mutate(sourcetestif = if_else(sourcetest == "PISA", "PISA", "TIMSS")) |> 
+  group_by(sourcetest, incomegroup) |>
+  summarize(mean_HLO = mean(hlo)) %>% 
+   pivot_wider(
+    names_from = sourcetest,
+    values_from = mean_HLO
+  ) |>  
+  mutate(
+    diff_in_means = PISA - TIMSS
+  )
+yes4
+```
+
+
+
