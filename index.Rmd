@@ -67,12 +67,6 @@ ggplot(data = outcome2,
 outcome2  |>
   ggplot(aes(x = year, y = mean_HLO, fill = region, color = region)) + geom_point() + facet_wrap(~ incomegroup)
 ```
-```{r}
-hlo_database |>
-  filter(sourcetest %in% c("PISA", "TIMSS")) |>
-ggplot(mapping = aes(x = incomegroup, y = hlo)) +
-  scale_fill_manual(values = c(PISA = "steelblue1", TIMSS = "indianred1")) + geom_col(mapping = aes(fill = sourcetest))
-```
 
 ```{r}
 yes4 <- hlo_database |>
