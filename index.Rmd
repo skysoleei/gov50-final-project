@@ -81,7 +81,7 @@ yes4 <- hlo_database |>
     values_from = mean_HLO
   ) |>  
   mutate(
-    diff_in_means_TIMSS = PISA - ((TIMSS + PIRLS) /2)
+    diff_in_means = PISA - ((TIMSS + PIRLS) /2)
   )
 
 knitr::kable(yes4)
