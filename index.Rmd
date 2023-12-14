@@ -7,20 +7,28 @@ output:
     self_contained: false
 ---
 
-## Project thoughts
+## Introduction
 
-I am interested in exploring data related to educational policy data in schools across the United States. I want to explore some of the correlations and connections between student test score and student performance through various parts of the country. I am very interested in data concerning the differences in test scores amoungst states or countries with district with stronger unions and and how it affects the probability of student success and contributions back to their home city.
+Is there a higher demonstration of human capital in certain income regions with the more curriculum-based or skills-based standardized tests? This program particularly interests me because I desire to explore some of the correlations and connections between student test score (human capital) and student performance through various parts of the world, and what fundamental components of the test actually matter most when it comes to contributing back to society through the lense of various socioeconomic groups. 
 
-## Milestone 2
+I hypothesize that there will be a significant difference between lower income regions and higher income regions, and that lower income regions will perform better in skills based testing. While students are administering more curriculum based tests, higher income regions have more access to tutoring services and likely have higher quality professors. The higher the funding of a particular region for educational spending, the greater resources, and therefore a greater chance of higher income regions doing better on curriculum based instruction. If I observe that there is a greater HLO value for higher income regions for the PISA test results, this would provide sufficient evidence for my hypothesis. On the other hand, if I notice the lower income regions are higher, this would prove my hypothesis wrong. I plan to take into consideration the timeline between both decades where this dataset took place, since this is a huge confounding variable that can affect my results.
 
-Is there a higher demonstration of human capital in certain income countries with the more curriculum-based or skills based standardized tests? In this study, I plan to examine test scores of regions who administer both the PISA and the TIMSS/PIRLS, both tests that fall under the Evaluation of Educational Achievement. Both the TIMSS (Trends in International Mathematics and Science Study) and the PIRLS (Progress in International Reading Literacy Study) are curriculum based, used to reflect knowledge taught in schools. The Program for International Student Assessment is an international assessment that can assess whether students can apply what they've learned to solve "real world problems''. I hypothesize that there will be a significant difference between lower income regions and higher income regions, and that lower income regions will perform better in skills based testing. While students are administering more curriculum based tests, higher income regions have more access to tutoring services and likely have higher quality professors. The higher the funding of a particular country for educational spending within a region, the greater resources, and therefore a greater chance of higher income regions doing better on curriculum based instruction. My sample is composed of the Harmonized Learning Outcomes (HLO) Database, a dataset aiming to bridge the gap between low- and middle-income countries in standardized testing that may have the most to gain from the formation of human capital. The data represent 98% of the global population (164 countries) and developing economies comprise two-thirds of the included countries from 2000 to 2017. My unit of analysis is hlo, a measurement to track the formation of human capital. The explanatory variables of interest whether countries are low income, high income, or lower-high income. My outcome variable would be HLO levels comparable in both the PISA and TIMSS/PIRLS tests. If I observe that there is a greater HLO value for higher income regions for the PISA test results, this would provide sufficient evidence for my hypothesis. On the other hand, if I notice the lower income regions are higher, this would prove my hypothesis wrong. I plan to take into consideration the timeline between both decades where this dataset took place, since this is a huge confounding variable that can affect my results.
 
-##Milestone 3
+##Data Section 
+
+I plan to examine test scores of regions who administer both the PISA and the TIMSS/PIRLS, both tests that fall under the Evaluation of Educational Achievement. Both the TIMSS (Trends in International Mathematics and Science Study) and the PIRLS (Progress in International Reading Literacy Study) are curriculum based, used to reflect knowledge taught in schools. The Program for International Student Assessment is an international assessment that can assess whether students can apply what they've learned to solve "real world problems''.
+
+My sample is composed of the Harmonized Learning Outcomes (HLO) Database, a dataset aiming to bridge the gap between low- and middle-income regions in standardized testing that may have the most to gain from the formation of human capital. This is a cross sectional study. This data represents 98% of the global population (164 countries) and developing economies comprise two-thirds of the included countries from 2000 to 2017. My unit of analysis is HLO, a measurement to track the formation of human capital. The explanatory variables of interest are the income levels of the regions (high, middle-low and high-middle) My outcome variable would be HLO levels comparable in both the PISA and TIMSS/PIRLS tests. Overall, the scatter plots used in this study provide insights into the distribution and trends of mean HLO scores across different years, regions, and income groups.
+
+
+
+##Results Section
 
 ```{r}
 library(tidyverse)
 library(dplyr)
 library(readxl)
+library(infer)
 
 
 hlo_database <- read_excel("hlo_database.xlsx")
@@ -43,11 +51,16 @@ ggplot(data = outcome,
   geom_point()
   
 outcome %>% 
-  ggplot(aes(x = year, y = mean_HLO, fill = region, color = region)) + geom_point() + facet_wrap(~ incomegroup)
+  ggplot(aes(x = year, y = mean_HLO, fill = region, color = region)) + geom_point() + facet_wrap(~ incomegroup) +
+  labs(x = "Year",
+       y = "Mean HLO Score",
+       title = "HLO Scores for the TIMSS + PIRLS",
+       source = "Human Capital Index (HLO), 2023")
 ```
+The first part of the analysis focuses on the TIMSS and PIRLS tests. For each region and year, the mean Human Capital Index (HLO) is calculated and visualized using a scatter plot. The plot colors and fills the points by country, and the points are grouped by income group. This provides a visual representation of how mean HLO varies across income groups for the TIMSS and PIRLS tests. 
 
-
-##Milestone 4 
+As seen by the graph, the highest testing HLO tend to be represented in the higher income districts, with the highest HLO average being high income, then upper middle income, then lower middle income regions for the TIMSS and PIRLS tests. The higher the income of a region, the higher the trend in HLO scores, meaning that the higher the human capital outcomes. These higher HLO values tend to be most prominent in East Asia & Pacific as well as Europe and Central Asia. 
+ 
 
 ```{r}
 outcome2 <- hlo_database |>
@@ -68,8 +81,15 @@ ggplot(data = outcome2,
   geom_point()
   
 outcome2  |>
-  ggplot(aes(x = year, y = mean_HLO, fill = region, color = region)) + geom_point() + facet_wrap(~ incomegroup)
+  ggplot(aes(x = year, y = mean_HLO, fill = region, color = region)) + geom_point() + facet_wrap(~ incomegroup) +
+  labs(x = "Year",
+       y = "Mean HLO Score",
+       title = "HLO Scores for the PISA",
+       source = "Human Capital Index (HLO), 2023")
 ```
+The second plot further breaks down the data by region, with separate panels (facets) for each income group. This allows for a more detailed examination of how the mean HLO varies over time and across regions within each income group. 
+
+As seen by the graph, the highest testing HLO tend to be represented in the higher income districts once again, with the highest HLO average being high income, then upper middle income, then lower middle income regions for the PISA tests. Once again, the higher the income of a region, the higher the trend in HLO scores, meaning regions with higher income levels exhibit higher HLO scores, indicating greater human capital outcomes. Like the previous scatter plot, higher HLO values tend to be most prominent in East Asia & Pacific as well as Europe and Central Asia. 
 
 ```{r}
 yes4 <- hlo_database |>
@@ -84,9 +104,38 @@ yes4 <- hlo_database |>
     diff_in_means = PISA - ((TIMSS + PIRLS) /2)
   )
 
-knitr::kable(yes4)
+knitr::kable(yes4, col.names = c("Income Group", "PIRLS", "PISA", "TIMSS", "ATE"), digits = 2, )
+
+
 
 ```
+This table displays mean HLO scores for each combination of educational tests (PISA, TIMSS, PIRLS) and income group. When calculating the difference in means (ATE), I considered both the PIRLS and TIMSS to be together, as they are tests that are taken together and therefore must be evaluated as such. In high-income regions, individuals taking PIRLS and TIMSS together achieve an average score of 512.6482, surpassing the PISA test by 6.89 points. In lower middle-income districts, PISA scores are higher by 4.8 points than the combined scores of TIMSS and PIRLS. Conversely, for upper middle-income groups, PISA scores are lower by -24.89 points than the combined scores of TIMSS and PIRLS. This overall suggests that higher income regions tend to do better and contribute the most as a result of curriculum based tests while lower middle income regions tend to benefit more from skills based testing. 
+ 
+
+```{r}
+library(broom)
+
+yes5 <- yes4 |>
+  pivot_longer(cols = c("PISA", "TIMSS", "PIRLS"), names_to = "test", values_to = "mean_HLO")
+
+regression_model <- lm(mean_HLO ~ test + incomegroup, data = yes5)
+
+modelsummary::modelsummary(regression_model,
+  statistic = c("s.e. = {std.error}", "p = {p.value}"),
+  gof_map = c("nobs", "r.squared", "adj.r.squared"),
+  caption = "Regression on Testing and Income Groups"
+)
+
+```
+The regression model reveals a statistically significant association between income groups and HLO scores, particularly in lower-income regions. The significant p-values, specifically <0.001 for lower middle income and 0.001 for upper middle income regions, highlight the influence of income disparities on the demonstration of human capital (measured by HLO scores). These results suggest that, on average, variations exist in human capital demonstration across different income regions, with curriculum-based standardized tests demonstrating greater benefits for higher income regions and skills-based tests showing more pronounced advantages for lower income regions. With p-values that are below 0.05, this supports the incomes statistical significance and therefore supports a causal interpretation, as well as the large effect size within income groups (lower-middle income = -104.025, upper-middle income = -57.607). 
 
 
+##Conclusion 
+
+In conclusion, from the comparison of scatterplots, the ATE tibble focusing on income groups, and the regression model suggest that income disparities play a role in the demonstration of human capital as measured by HLO scores.These outcomes support my initial hypothesis, pointing to statistically significant distinctions between lower and higher income regions in HLO scores across the administered tests. Higher HLO scores in the PISA test for lower income regions  imply a positive correlation between income and skills-based testing, resulting in a larger contribution to human capital as such. In contrast, Higher TIMSS and PIRLS scores in higher income regions suggest a positive association between income and curriculum-based testing, supporting my hypothesis of lower income regions performing better in skills based testing. Some limitations of analysis are the absence of data from actual low-income regions, as they don't have access to the PISA test as indicated by the first scatterplot. Given additional resources and funds, I would conduct an analysis by administering the PISA test with low income regions in order to capture observed differences in HLO scores between skills and curriculum-based testing to further confirm my hypothesis. Another confounding variable I would like to highlight is the governmental policies and cultural factors towards education and the importance placed on standardized testing. As reflected in the United States, the significance of standardized testing can vary and differences in culture as well as educational investments in certain regions on these tests can affect both income and performance on them. Considering the varying significance of standardized testing across cultures and regions, understanding the impact of governmental policies remains crucial in interpreting income and performance differentials on these tests and its impact on HLO outcomes. 
+
+
+##Database Used 
+
+“Harmonized Learning Outcomes (HLO) Database - Measuring Human Capital Using Global Learning Data ,” The World Bank, March 16, 2021. 
 
